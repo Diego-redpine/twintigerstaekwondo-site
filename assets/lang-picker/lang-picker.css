@@ -1,0 +1,280 @@
+/* RedPine Lang Picker — universal language picker for RedPine client sites.
+   Each site overrides the CSS variables below in its own brand stylesheet.
+   ----------------------------------------------------------------------- */
+:root {
+  --rp-lp-accent: var(--tt-red, #D72428);
+  --rp-lp-accent-dark: var(--tt-red-dark, #A81B1E);
+  --rp-lp-ink: var(--tt-ink, #1A0F10);
+  --rp-lp-surface: #FFFFFF;
+  --rp-lp-on-surface: #1A0F10;
+  --rp-lp-muted: rgba(26, 15, 16, 0.6);
+  --rp-lp-line: rgba(26, 15, 16, 0.08);
+  --rp-lp-modal-bg: #FFFFFF;
+  --rp-lp-modal-text: #1A0F10;
+  --rp-lp-display-font: "Bungee", "Inter", system-ui, sans-serif;
+  --rp-lp-body-font: "Inter", system-ui, sans-serif;
+  --rp-lp-z: 9990;
+}
+
+/* Backdrop */
+.rp-lang-back {
+  position: fixed; inset: 0;
+  background: rgba(0, 0, 0, 0.62);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: calc(var(--rp-lp-z) + 1);
+  opacity: 0; pointer-events: none;
+  transition: opacity 240ms ease;
+}
+.rp-lang-back.rp-show { opacity: 1; pointer-events: auto; }
+
+/* Modal */
+.rp-lang-modal {
+  position: fixed;
+  top: 50%; left: 50%;
+  transform: translate(-50%, calc(-50% + 14px)) scale(0.96);
+  width: min(420px, calc(100vw - 32px));
+  max-height: min(460px, calc(100vh - 80px));
+  background: var(--rp-lp-modal-bg);
+  color: var(--rp-lp-modal-text);
+  z-index: calc(var(--rp-lp-z) + 2);
+  opacity: 0; pointer-events: none;
+  transition: opacity 240ms ease, transform 320ms cubic-bezier(0.22,1,0.36,1);
+  font-family: var(--rp-lp-body-font);
+  border-top: 4px solid var(--rp-lp-accent);
+  display: flex; flex-direction: column;
+  box-shadow: 0 28px 80px rgba(0,0,0,0.32), 0 0 0 1px rgba(0,0,0,0.05);
+  overflow: hidden;
+}
+.rp-lang-modal.rp-show {
+  opacity: 1; pointer-events: auto;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.rp-lang-modal[hidden] { display: none !important; }
+
+.rp-lang-modal-head {
+  padding: 22px 28px 16px;
+  text-align: center;
+  position: relative;
+  border-bottom: 1px solid var(--rp-lp-line);
+  flex: 0 0 auto;
+}
+.rp-lang-close {
+  position: absolute; top: 12px; right: 14px;
+  width: 32px; height: 32px;
+  border: none; background: transparent;
+  color: var(--rp-lp-muted);
+  font-size: 22px; line-height: 1;
+  cursor: pointer; padding: 0;
+  display: inline-flex; align-items: center; justify-content: center;
+  border-radius: 50%;
+}
+.rp-lang-close:hover { background: rgba(0,0,0,0.06); color: var(--rp-lp-ink); }
+
+.rp-lang-typewriter {
+  font-family: var(--rp-lp-display-font);
+  font-size: clamp(18px, 3.6vw, 22px);
+  line-height: 1.25;
+  color: var(--rp-lp-ink);
+  letter-spacing: 0.01em;
+  min-height: 1.4em;
+  display: flex; align-items: center; justify-content: center;
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+}
+.rp-lang-typed {
+  display: inline-block;
+  text-align: center;
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 360ms cubic-bezier(0.22,1,0.36,1), transform 360ms cubic-bezier(0.22,1,0.36,1);
+  will-change: opacity, transform;
+}
+.rp-lang-typed[dir="rtl"] { direction: rtl; }
+.rp-lang-typed.rp-fade-out {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+.rp-lang-typed.rp-fade-in-prep {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .rp-lang-typed { transition: opacity 200ms ease; transform: none !important; }
+}
+
+/* List */
+.rp-lang-list {
+  list-style: none; padding: 8px 0;
+  margin: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: var(--rp-lp-accent) transparent;
+  flex: 1 1 auto;
+}
+.rp-lang-list::-webkit-scrollbar { width: 8px; }
+.rp-lang-list::-webkit-scrollbar-thumb { background: var(--rp-lp-accent); border-radius: 4px; }
+.rp-lang-list::-webkit-scrollbar-track { background: transparent; }
+
+.rp-lang-row {
+  width: 100%;
+  appearance: none;
+  background: transparent;
+  border: 0;
+  padding: 11px 22px;
+  display: grid;
+  grid-template-columns: 28px 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--rp-lp-body-font);
+  font-size: 15px;
+  color: var(--rp-lp-ink);
+  cursor: pointer;
+  text-align: left;
+  border-bottom: 1px solid var(--rp-lp-line);
+  transition: background 140ms ease;
+}
+.rp-lang-row:last-child { border-bottom: 0; }
+.rp-lang-row:hover, .rp-lang-row:focus-visible {
+  background: rgba(215, 36, 40, 0.06);
+  outline: none;
+}
+.rp-lang-row[aria-disabled="true"] { color: var(--rp-lp-muted); cursor: default; }
+.rp-lang-row[aria-disabled="true"]:hover { background: transparent; }
+.rp-lang-row[aria-current="true"] {
+  background: rgba(215, 36, 40, 0.08);
+}
+
+.rp-lang-flag {
+  width: 28px; height: 20px;
+  display: inline-flex;
+  border-radius: 2px;
+  overflow: hidden;
+  background: #eee;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.06);
+}
+.rp-lang-flag img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.rp-lang-name {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  font-feature-settings: "ss01";
+}
+.rp-lang-name[dir="rtl"] { direction: rtl; text-align: left; font-family: "Cairo", "Noto Sans Arabic", "Noto Sans Hebrew", var(--rp-lp-body-font); }
+
+.rp-lang-meta {
+  display: flex; align-items: center; gap: 8px;
+  color: var(--rp-lp-muted);
+  font-size: 11px;
+}
+.rp-lang-coming {
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: var(--rp-lp-line);
+  color: var(--rp-lp-ink);
+  padding: 2px 7px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+/* Checkbox-style pick indicator (replaces the chevron) */
+.rp-lang-check {
+  width: 20px; height: 20px;
+  display: inline-flex;
+  align-items: center; justify-content: center;
+  border: 2px solid var(--rp-lp-line);
+  border-radius: 4px;
+  background: var(--rp-lp-modal-bg);
+  flex-shrink: 0;
+  transition: all 160ms ease;
+}
+.rp-lang-row:hover .rp-lang-check { border-color: var(--rp-lp-accent); }
+.rp-lang-row[aria-current="true"] .rp-lang-check {
+  background: var(--rp-lp-accent);
+  border-color: var(--rp-lp-accent);
+}
+.rp-lang-row[aria-current="true"] .rp-lang-check::after {
+  content: "";
+  width: 5px; height: 9px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+.rp-lang-row[aria-disabled="true"] .rp-lang-check { opacity: 0.35; }
+
+/* Disclaimer at the bottom of the modal — translated per language. */
+.rp-lang-disclaimer {
+  flex: 0 0 auto;
+  padding: 10px 22px 14px;
+  margin: 0;
+  font-family: var(--rp-lp-body-font);
+  font-size: 11px;
+  letter-spacing: 0.01em;
+  line-height: 1.4;
+  color: var(--rp-lp-muted);
+  text-align: center;
+  border-top: 1px solid var(--rp-lp-line);
+  background: var(--rp-lp-modal-bg);
+}
+.rp-lang-disclaimer[dir="rtl"] { direction: rtl; }
+
+/* Re-open control — lives INSIDE the site footer at far-right-bottom.
+   No fixed positioning, no shadow, inherits footer text color. */
+.rp-lang-fab {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px 6px 8px;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  cursor: pointer;
+  color: inherit;
+  font-family: var(--rp-lp-body-font);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 600;
+  opacity: 0.85;
+  transition: opacity 160ms ease, background 160ms ease;
+  vertical-align: middle;
+}
+.rp-lang-fab:hover { opacity: 1; background: rgba(255,255,255,0.08); }
+.rp-lang-fab:focus-visible { outline: 2px solid currentColor; outline-offset: 2px; }
+.rp-lang-fab img {
+  width: 22px; height: 16px;
+  border-radius: 2px;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.1);
+}
+.rp-lang-fab .rp-lang-fab-code {
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.rp-lang-fab .rp-lang-fab-caret {
+  font-size: 10px;
+  opacity: 0.7;
+}
+/* Auto-position the FAB at the far-right-bottom inside flex/grid footers */
+.rp-lang-fab[data-rp-fab-host] { margin-left: auto; }
+
+@media (max-width: 560px) {
+  .rp-lang-modal { width: calc(100vw - 24px); max-height: calc(100vh - 64px); }
+  .rp-lang-modal-head { padding: 18px 22px 14px; }
+  .rp-lang-row { padding: 10px 18px; }
+  .rp-lang-fab { font-size: 11px; padding: 5px 10px 5px 7px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rp-lang-cursor { animation: none; }
+}
